@@ -187,8 +187,9 @@ def infer_step(batch_data, model):
         )
         pred_dict["np"] = F.softmax(pred_dict["np"], dim=-1)[..., 1:]
         if "tp" in pred_dict:
-            type_map = F.softmax(pred_dict["tp"], dim=-1)
-            type_map = torch.argmax(type_map, dim=-1, keepdim=True)
+            type_map_softmax = F.softmax(pred_dict["tp"], dim=-1)
+            pred_dict["tp_softmax"] = type_map_softmax.type(torch.float32)
+            type_map = torch.argmax(type_map_softmax, dim=-1, keepdim=True)
             type_map = type_map.type(torch.float32)
             pred_dict["tp"] = type_map
         pred_output = torch.cat(list(pred_dict.values()), -1)
